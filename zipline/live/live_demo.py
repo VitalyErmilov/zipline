@@ -1,5 +1,4 @@
 
-
 """
 Simple example taken from here:
 https://github.com/quantopian/zipline/blob/master/zipline/examples/dual_ema_talib.py,
@@ -9,16 +8,21 @@ Will be converted to use live data instead of backtest data.
 
 Created by Peter Harrington (pbharrin) on 4/13/17.
 """
+
 from zipline import TradingAlgorithm
+
 from zipline.data.data_portal import DataPortal
 from zipline.finance.trading import TradingEnvironment
+
 from zipline.utils.factory import create_simulation_parameters
 from zipline.utils.calendars import get_calendar
 from zipline.pipeline.loaders import USEquityPricingLoader
 from zipline.pipeline.data.equity_pricing import USEquityPricing
 from zipline.data.bundles.core import load
+
 from zipline.api import symbol, order  # used in handle_data
 from talib import EMA
+
 
 import os
 import re
@@ -93,6 +97,7 @@ if __name__ == '__main__':
             context.invested = False
             sell = True
 
+
     # the actual running of the backtest happens in the TradingAlgorithm object
     bt_start = time()
     perf = TradingAlgorithm(
@@ -114,6 +119,5 @@ if __name__ == '__main__':
     bt_end = time()
 
     print perf['portfolio_value']
-
     print "The backtest took %0.2f seconds to run." % (bt_end - bt_start)
     print("all done boss")
