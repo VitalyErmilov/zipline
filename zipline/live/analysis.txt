@@ -27,10 +27,17 @@ line 2153: current_data used in validate_account_controls
 Other notes:
 TradingAlgorithm.on_dt_changed() is called by the simulation loop, this would need to be called by something similar to
 simulation.
+
 Blotter and DataPortal both need to access the broker.  Data comes in through DataPortal and out through Blotter.
+
 We should create an abstract class called: Broker, (perhaps a Singleton) that both DataPortal and Blotter will have
 access to.  (Perhaps others will need access as well.)  The IB specific code will be placed in IBBroker which inherits
 from Broker.
+
+TradingAlgorithm (algorithm.py) is over 2500 lines, only 200 of these lines are for constructing a TradingAlgorithm.
+The rest of the code contains methods used for placing orders, getting sids, fetching csvs.  Bascially everything
+interesting happens in this class.  The pyi file: zipline/api.pyi defines an interface for these so they can be called
+before Trading Algorithm is actually instantiated.  (.pyi is a Python stub file, used to provide hints PEP 484)
 
 Simulation Class           Live Trading Class
 ==============================================
@@ -43,4 +50,7 @@ New Classes
 ==================
 BrokerClient
 IBBrokerClient
+
+Risks
+==================
 
