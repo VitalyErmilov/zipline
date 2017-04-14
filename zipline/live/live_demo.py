@@ -10,16 +10,14 @@ Created by Peter Harrington (pbharrin) on 4/13/17.
 """
 
 from zipline import TradingAlgorithm
-
 from zipline.data.data_portal import DataPortal
 from zipline.finance.trading import TradingEnvironment
-
+from zipline.live import IBBrokerClient
 from zipline.utils.factory import create_simulation_parameters
 from zipline.utils.calendars import get_calendar
 from zipline.pipeline.loaders import USEquityPricingLoader
 from zipline.pipeline.data.equity_pricing import USEquityPricing
 from zipline.data.bundles.core import load
-
 from zipline.api import symbol, order  # used in handle_data
 from talib import EMA
 
@@ -52,8 +50,11 @@ def make_choose_loader(pl_loader):
 
 
 if __name__ == '__main__':
+    # create broker
+    broker = IBBrokerClient()
+    # TODO: need to pass broker into the relevant classes, and change those classes to be live versions
 
-    # load the bundle
+    # load the bundle,
     bundle_data = load('quantopian-quandl', os.environ, None)
     cal = bundle_data.equity_daily_bar_reader.trading_calendar.all_sessions
     pipeline_loader = USEquityPricingLoader(bundle_data.equity_daily_bar_reader, bundle_data.adjustment_reader)
@@ -118,6 +119,6 @@ if __name__ == '__main__':
     ).run(data, overwrite_sim_params=False,)
     bt_end = time()
 
-    print perf['portfolio_value']
-    print "The backtest took %0.2f seconds to run." % (bt_end - bt_start)
+    print(perf['portfolio_value'])
+    print("The backtest took %0.2f seconds to run." % (bt_end - bt_start))
     print("all done boss")
