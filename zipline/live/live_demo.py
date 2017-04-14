@@ -10,9 +10,13 @@ Created by Peter Harrington (pbharrin) on 4/13/17.
 """
 
 from zipline import TradingAlgorithm
-from zipline.data.data_portal import DataPortal
+from zipline.finance.cancel_policy import NeverCancel      # used in simulation Blotter
+from zipline.finance.commission import PerShare            # used in simulation Blotter
+from zipline.finance.slippage import VolumeShareSlippage   # used in simulation Blotter
 from zipline.finance.trading import TradingEnvironment
 from zipline.live.IB_broker_client import IBBrokerClient
+from zipline.live.blotter_live import BlotterLive
+from zipline.live.data_portal_live import DataPortalLive
 from zipline.utils.factory import create_simulation_parameters
 from zipline.utils.calendars import get_calendar
 from zipline.pipeline.loaders import USEquityPricingLoader
@@ -52,7 +56,8 @@ def make_choose_loader(pl_loader):
 if __name__ == '__main__':
     # create broker
     broker = IBBrokerClient()
-    # TODO: need to pass broker into the relevant classes, and change those classes to be live versions
+    # TODO: need to pass broker into the relevant classes: DataPortalLive & BlotterLive
+    # TODO: pass in AlgorithmTrader as trading_client to
 
     # load the bundle,
     bundle_data = load('quantopian-quandl', os.environ, None)
@@ -62,12 +67,19 @@ if __name__ == '__main__':
 
     env = TradingEnvironment(asset_db_path=parse_sqlite_connstr(bundle_data.asset_finder.engine.url))
 
-    data = DataPortal(
+    data = DataPortalLive(
         env.asset_finder, get_calendar("NYSE"),
         first_trading_day=bundle_data.equity_minute_bar_reader.first_trading_day,
         equity_minute_reader=bundle_data.equity_minute_bar_reader,
         equity_daily_reader=bundle_data.equity_daily_bar_reader,
         adjustment_reader=bundle_data.adjustment_reader,
+    )
+
+    blotter = BlotterLive(data_frequency='daily',
+                      asset_finder=env.asset_finder,
+                      slippage_func=VolumeShareSlippage(),
+                      commission=PerShare(),
+                      cancel_policy=NeverCancel()  # Default to NeverCancel in zipline
     )
 
     start = makeTS("2015-11-01"); end = makeTS("2016-11-01")  # this can go anywhere before the TradingAlgorithm
@@ -104,6 +116,8 @@ if __name__ == '__main__':
     perf = TradingAlgorithm(
         env=env,
         get_pipeline_loader=choose_loader,
+        blotter=blotter,
+        #trading_client = algo_trader,
         sim_params=create_simulation_parameters(
             start=start,
             end=end,

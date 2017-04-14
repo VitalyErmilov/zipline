@@ -276,6 +276,8 @@ class TradingAlgorithm(object):
         # If an env has been provided, pop it
         self.trading_environment = kwargs.pop('env', None)
 
+        self.trading_client = kwargs.pop('trading_client', None)
+
         if self.trading_environment is None:
             self.trading_environment = TradingEnvironment()
 
@@ -580,15 +582,16 @@ class TradingAlgorithm(object):
             self.initialize(*self.initialize_args, **self.initialize_kwargs)
             self.initialized = True
 
-        self.trading_client = AlgorithmSimulator(
-            self,
-            sim_params,
-            self.data_portal,
-            self._create_clock(),
-            self._create_benchmark_source(),
-            self.restrictions,
-            universe_func=self._calculate_universe
-        )
+        if self.trading_client is None:
+            self.trading_client = AlgorithmSimulator(
+                self,
+                sim_params,
+                self.data_portal,
+                self._create_clock(),
+                self._create_benchmark_source(),
+                self.restrictions,
+                universe_func=self._calculate_universe
+            )
 
         return self.trading_client.transform()
 
