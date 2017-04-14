@@ -2,7 +2,7 @@
 """
 Created by Peter Harrington (pbharrin) on 4/13/17.
 """
-from zipline.live.BrokerClient import BrokerClient
+from zipline.live.broker_client import BrokerClient
 
 
 class IBBrokerClient(BrokerClient):
@@ -13,4 +13,4 @@ class IBBrokerClient(BrokerClient):
     """
 
     def __init__(self):
-        print("")
+        print("I have been Created, and it feels great!")

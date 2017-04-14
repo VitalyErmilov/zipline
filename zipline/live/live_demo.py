@@ -12,7 +12,7 @@ Created by Peter Harrington (pbharrin) on 4/13/17.
 from zipline import TradingAlgorithm
 from zipline.data.data_portal import DataPortal
 from zipline.finance.trading import TradingEnvironment
-from zipline.live import IBBrokerClient
+from zipline.live.IB_broker_client import IBBrokerClient
 from zipline.utils.factory import create_simulation_parameters
 from zipline.utils.calendars import get_calendar
 from zipline.pipeline.loaders import USEquityPricingLoader
@@ -36,7 +36,7 @@ def makeTS(date_str):
 
 
 def parse_sqlite_connstr(db_URL):
-    """parses out the db connection string (needed to make a TradingEnvironment"""
+    """parses out the db connection string (needed to make a TradingEnvironment)"""
     _, connstr = re.split(r'sqlite:///', str(db_URL), maxsplit=1,)
     return connstr
 
